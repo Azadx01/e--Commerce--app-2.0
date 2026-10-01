@@ -62,8 +62,13 @@ api.interceptors.response.use(
 
         // Network / timeout errors
         if (!error.response) {
-            console.warn('[API Network Error]', `${error.config?.baseURL}${error.config?.url}`, error.message);
-            throw new ApiError(0, `Network error — please check your connection (${error.config?.baseURL || 'unknown URL'}).`, true);
+            const targetUrl = `${error.config?.baseURL ?? ''}${error.config?.url ?? ''}`;
+            console.warn('[API Network Error]', targetUrl, error.message);
+            throw new ApiError(
+                0,
+                `Network error reaching ${targetUrl}. Please check backend status, local IP, or network connectivity.`,
+                true
+            );
         }
 
         const { status, data } = error.response as { status: number; data: { detail?: string } };

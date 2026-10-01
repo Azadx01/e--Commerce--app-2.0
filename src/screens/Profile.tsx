@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, Alert } from 'react-native';
+import { View, StyleSheet, Text, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../navigation/types';
 import { Header, Button, Card, Loading } from '../components';
