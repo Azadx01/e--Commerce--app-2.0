@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Production Service
+  db:
+    image: postgres:15-alpine
+    container_name: revivo_prod_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - prod_postgres_data:/var/lib/postgresql/data
+    networks:
+      - revivo_internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Production Service
+  redis:
+    image: redis:7-alpine
+    container_name: revivo_prod_redis
+    restart: always
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes"]
+    volumes:
+      - prod_redis_data:/data
+    networks:
+      - revivo_internal_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend Production Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: revivo_prod_backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env.production
+    networks:
+      - revivo_internal_net
+      - revivo_public_net
+    ports:
+      - "8000:8000"
+    command: ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "--bind", "0.0.0.0:8000", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-"]
+
+networks:
+  revivo_internal_net:
+    driver: bridge
+  revivo_public_net:
+    driver: bridge
+
+volumes:
+  prod_postgres_data:
+  prod_redis_data:

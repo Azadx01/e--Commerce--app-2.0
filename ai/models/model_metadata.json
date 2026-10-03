@@ -1,0 +1,43 @@
+{
+  "model_version": "1.0.0",
+  "champion_model": "GradientBoostingRegressor",
+  "trained_at_utc": "2026-10-03T17:50:24.582575+00:00",
+  "target_variable": "repair_cost",
+  "evaluation_metrics": {
+    "mae": 5.0899,
+    "rmse": 9.7629,
+    "r2_score": 0.9957
+  },
+  "candidate_benchmarks": {
+    "RandomForestRegressor": {
+      "mae": 5.8665,
+      "rmse": 10.7735,
+      "r2_score": 0.9947
+    },
+    "GradientBoostingRegressor": {
+      "mae": 5.0899,
+      "rmse": 9.7629,
+      "r2_score": 0.9957
+    }
+  },
+  "dataset_info": {
+    "total_samples": 1250,
+    "train_samples": 1000,
+    "test_samples": 250,
+    "numerical_features": [
+      "device_age",
+      "parts_cost",
+      "labor_cost",
+      "resale_value",
+      "repair_duration"
+    ],
+    "categorical_features": [
+      "device_model",
+      "issue",
+      "condition",
+      "repair_outcome"
+    ]
+  },
+  "artifact_file": "repair_cost_gradientboostingregressor_v1.0.0.joblib",
+  "is_production_ready": true
+}
